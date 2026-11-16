@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+---
+<BaseLayout
+  title="Blog: cotanjant"
+  description="Notes from building Rust desktop audio tools, kernels, Go infrastructure, and web apps."
+  canonicalPath="/blog/"
+  activeNav="blog"
+>
+  <Fragment slot="head">
+    <style is:inline>
+      main > section.blog-page {
+        height: auto;
+        min-height: 75svh;
+      }
+      .blog-list {
+        margin-top: var(--s-7);
+        display: grid;
+        gap: var(--s-5);
+      }
+      .blog-item {
+        display: grid;
+        grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+        gap: var(--s-5);
+        padding: var(--s-6);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        background: var(--surface);
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .blog-item__meta {
+        font: 500 var(--t-label)/1.5 var(--font-mono);
+        color: var(--muted);
+        display: grid;
+        align-content: start;
+        gap: var(--s-2);
+      }
+      .blog-item__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-2);
+      }
+      .blog-item__tags span {
+        padding: 3px 8px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+      }
+      .blog-item__body h2 {
+        font-size: var(--t-h3);
+        line-height: 1.2;
+        margin: 0 0 var(--s-2);
+      }
+      .blog-item__body p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 60ch;
+      }
+      @media (max-width: 767px) {
+        .blog-item {
+          grid-template-columns: minmax(0, 1fr);
+          gap: var(--s-3);
+          padding: var(--s-5);
+        }
+      }
+    </style>
+  </Fragment>
+
+  <section class="section blog-page" aria-labelledby="blog-index-h">
+    <div class="wrap">
+      <div class="section-head section-head--row">
+        <div>
+          <h1 id="blog-index-h">Writing</h1>
+          <p class="t-lead">Notes on Rust systems code, Go deployments, and project decisions.</p>
+        </div>
+        <a class="link" href="/">Back to home</a>
+      </div>
+
+      <div class="blog-list">
+        {posts.map((post) => (
+          <a class="card blog-item" href={`/blog/${post.id}/`}>
+            <div class="blog-item__meta">
+              <span>{formatDate(post.data.pubDate)} · {post.data.readingTime}</span>
+              <div class="blog-item__tags">
+                {post.data.tags.map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div class="blog-item__body">
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

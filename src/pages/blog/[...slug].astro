@@ -1,0 +1,136 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+<BaseLayout
+  title={`${post.data.title}: cotanjant`}
+  description={post.data.description}
+  canonicalPath={`/blog/${post.id}/`}
+  activeNav="blog"
+>
+  <Fragment slot="head">
+    <style is:inline>
+      main > section.blog-page {
+        height: auto;
+        min-height: 75svh;
+      }
+      .article-wrap {
+        max-width: 66ch;
+      }
+      .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--s-4);
+        margin-bottom: var(--s-4);
+        font: 500 var(--t-label)/1.4 var(--font-mono);
+        color: var(--muted);
+      }
+      .article-header h1 {
+        font-size: clamp(32px, 3.6vw, 48px);
+        line-height: 1.08;
+        letter-spacing: var(--display-tracking);
+        margin: 0 0 var(--s-4);
+      }
+      .article-lead {
+        font-size: var(--t-lead);
+        line-height: 1.5;
+        color: var(--muted);
+        margin: 0 0 var(--s-6);
+      }
+      .article-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-5);
+        padding-bottom: var(--s-6);
+        border-bottom: 1px solid var(--line);
+        margin-bottom: var(--s-6);
+      }
+      .prose {
+        font-size: var(--t-body);
+        line-height: 1.7;
+      }
+      .prose h2 {
+        font-size: var(--t-h3);
+        line-height: 1.25;
+        margin: var(--s-7) 0 var(--s-3);
+      }
+      .prose p {
+        margin: 0 0 var(--s-4);
+      }
+      .prose a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .prose code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        padding: 2px 6px;
+        border-radius: var(--r-sm);
+        background: var(--surface);
+        border: 1px solid var(--line);
+      }
+      .prose pre {
+        margin: var(--s-5) 0;
+        padding: var(--s-4);
+        border-radius: var(--r-md);
+        background: color-mix(in oklab, var(--bg) 72%, #000);
+        border: 1px solid var(--line);
+        overflow-x: auto;
+      }
+      .prose pre code {
+        padding: 0;
+        border: 0;
+        background: none;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+    </style>
+  </Fragment>
+
+  <section class="section blog-page" aria-labelledby="post-h">
+    <div class="wrap">
+      <article class="article-wrap">
+        <header class="article-header">
+          <div class="article-meta">
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            <span>{post.data.readingTime}</span>
+            <span>{post.data.tags.join(', ')}</span>
+          </div>
+          <h1 id="post-h">{post.data.title}</h1>
+          <p class="article-lead">{post.data.description}</p>
+          <div class="article-actions">
+            <a class="link" href="/blog/">All posts</a>
+            {post.data.repo && (
+              <a class="link" href={post.data.repo} target="_blank" rel="noopener">View repository</a>
+            )}
+          </div>
+        </header>
+
+        <div class="prose">
+          <Content />
+        </div>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
