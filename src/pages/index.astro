@@ -7,6 +7,8 @@ const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 2);
 
+const bySlug = Object.fromEntries(PROJECTS.map((p) => [p.slug, p]));
+
 const stackDiagram = JSON.stringify({
   layout: 'hub',
   alt: 'Deniz Dayan builds across Rust, Go, Kubernetes, Docker, Python, Next.js, Spring, and Astro.',
@@ -271,7 +273,7 @@ function formatDate(date: Date): string {
           <p class="hero__lead">{PROFILE.repoCount} public GitHub repositories in Rust, Go, Python, and TypeScript.</p>
         </div>
 
-        <div class="ly-collage span-6 start-4" role="img" aria-label="Three rotating views of projects by Deniz Dayan: thunder DAW, krnl, daily, showcase, sp5der, fizz, teamalazfrc, skallibrary, and ridvanotel.">
+        <div class="ly-collage span-6 start-4" role="img" aria-label="Three rotating views of projects by Deniz Dayan: thunder DAW, krnl, daily, showcase, teamalazfrc, skallibrary, and ridvanotel.">
           <div class="ly-collage__set is-on">
             <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
               <div class="pc-head"><span>thunder</span><span class="pc-badge">Rust</span></div>
@@ -312,18 +314,18 @@ function formatDate(date: Date): string {
               </div>
             </div>
             <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
-              <div class="pc-head"><span>sp5der</span><span class="pc-badge">TUI</span></div>
-              <p class="pc-title">Libvirt VM monitor</p>
+              <div class="pc-head"><span>ridvanotel</span><span class="pc-badge">React</span></div>
+              <p class="pc-title">Ridvan Otel Cesme</p>
               <div class="pc-rows">
-                <div class="pc-row"><span>UI</span><em>Bubble Tea</em></div>
-                <div class="pc-row"><span>Host</span><em>libvirt-go</em></div>
+                <div class="pc-row"><span>Locales</span><em>TR / EN</em></div>
+                <div class="pc-row"><span>Stack</span><em>Vite + GSAP</em></div>
               </div>
             </div>
             <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
-              <div class="pc-head"><span>fizz</span><span class="pc-badge">Rust</span></div>
-              <p class="pc-title">Wallet inspector</p>
+              <div class="pc-head"><span>daily</span><span class="pc-badge">Astro</span></div>
+              <p class="pc-title">Release site</p>
               <div class="pc-rows">
-                <div class="pc-row"><span>Chains</span><em>Solana, EVM</em></div>
+                <div class="pc-row"><span>Targets</span><em>Win, Mac, Linux</em></div>
               </div>
             </div>
           </div>
@@ -347,10 +349,10 @@ function formatDate(date: Date): string {
               </div>
             </div>
             <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
-              <div class="pc-head"><span>ridvanotel</span><span class="pc-badge">React</span></div>
-              <p class="pc-title">Ridvan Otel</p>
+              <div class="pc-head"><span>thunder</span><span class="pc-badge">CLAP</span></div>
+              <p class="pc-title">Plugin host</p>
               <div class="pc-rows">
-                <div class="pc-row"><span>Locales</span><em>TR / EN</em></div>
+                <div class="pc-row"><span>Scanner</span><em>out-of-proc</em></div>
               </div>
             </div>
           </div>
@@ -386,10 +388,10 @@ function formatDate(date: Date): string {
             </div>
             <div class="ui-win__body">
               <nav class="ui-win__side" aria-hidden="true">
-                <span class="ui-win__nav is-on">All<em>21</em></span>
-                <span class="ui-win__nav">Rust<em>6</em></span>
-                <span class="ui-win__nav">Go<em>2</em></span>
-                <span class="ui-win__nav">TS<em>3</em></span>
+                <span class="ui-win__nav is-on">Selected<em>7</em></span>
+                <span class="ui-win__nav">Rust<em>3</em></span>
+                <span class="ui-win__nav">TS<em>2</em></span>
+                <span class="ui-win__nav">Go<em>1</em></span>
                 <span class="ui-win__label">Areas</span>
                 <span class="ui-win__nav"><span class="ui-win__hash">#</span>systems</span>
                 <span class="ui-win__nav"><span class="ui-win__hash">#</span>web</span>
@@ -397,7 +399,7 @@ function formatDate(date: Date): string {
               <div class="ui-win__main">
                 <div class="ui-win__cols" aria-hidden="true"><span>Repo</span><span>Area</span><span>State</span><span>Lang</span></div>
                 <ul class="ui-win__rows">
-                  {PROJECTS.slice(0, 7).map((repo, idx) => (
+                  {PROJECTS.map((repo, idx) => (
                     <li class="ui-win__row" data-row>
                       <span class="ui-avatar" data-tone={String((idx % 5) + 1)}>{repo.name.slice(0, 2).toUpperCase()}</span>
                       <span class="ui-win__who">{repo.name}</span>
@@ -459,29 +461,29 @@ function formatDate(date: Date): string {
 
           <div class="tabs-panels">
             <div role="tabpanel" id="panel-thunder" aria-labelledby="t-thunder">
-              <p>Desktop FL-style step-sequencer DAW in Rust using cpal, egui_dock panels, fundsp synths, and isolated CLAP plugin scanning.</p>
+              <p>{bySlug.thunder.summary}</p>
               <div class="tabs-links">
-                <a class="link" href={PROJECTS[0].repoUrl} target="_blank" rel="noopener">Open thunder repo</a>
-                <a class="link" href={PROJECTS[0].liveUrl} target="_blank" rel="noopener">Visit download page</a>
+                <a class="link" href={bySlug.thunder.repoUrl} target="_blank" rel="noopener">Open thunder repo</a>
+                <a class="link" href={bySlug.thunder.liveUrl} target="_blank" rel="noopener">Visit download page</a>
               </div>
             </div>
             <div role="tabpanel" id="panel-krnl" aria-labelledby="t-krnl" hidden>
-              <p>Experimental x86_64 kernel built against x86_64-unknown-none on Rust nightly, booted with Limine and packaged with xorriso.</p>
+              <p>{bySlug.krnl.summary}</p>
               <div class="tabs-links">
-                <a class="link" href={PROJECTS[1].repoUrl} target="_blank" rel="noopener">Open krnl repo</a>
+                <a class="link" href={bySlug.krnl.repoUrl} target="_blank" rel="noopener">Open krnl repo</a>
               </div>
             </div>
             <div role="tabpanel" id="panel-showcase" aria-labelledby="t-showcase" hidden>
-              <p>Go backend paired with separated Kubernetes, ArgoCD, and OpenTofu deployment manifests in showcase-gitops.</p>
+              <p>{bySlug.showcase.summary}</p>
               <div class="tabs-links">
-                <a class="link" href={PROJECTS[2].repoUrl} target="_blank" rel="noopener">Open showcase repo</a>
+                <a class="link" href={bySlug.showcase.repoUrl} target="_blank" rel="noopener">Open showcase repo</a>
               </div>
             </div>
             <div role="tabpanel" id="panel-alaz" aria-labelledby="t-alaz" hidden>
-              <p>Public landing site and Git-backed admin CMS for FRC Team ALAZ #12368 in Izmir, built with Next.js 15 and React 19.</p>
+              <p>{bySlug.teamalazfrc.summary}</p>
               <div class="tabs-links">
-                <a class="link" href={PROJECTS[3].repoUrl} target="_blank" rel="noopener">Open teamalazfrc repo</a>
-                <a class="link" href={PROJECTS[3].liveUrl} target="_blank" rel="noopener">Visit live site</a>
+                <a class="link" href={bySlug.teamalazfrc.repoUrl} target="_blank" rel="noopener">Open teamalazfrc repo</a>
+                <a class="link" href={bySlug.teamalazfrc.liveUrl} target="_blank" rel="noopener">Visit live site</a>
               </div>
             </div>
           </div>

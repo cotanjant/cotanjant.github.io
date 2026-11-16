@@ -24,7 +24,8 @@ const buildsHref = isHome ? '#builds' : '/#builds';
 const aboutHref = isHome ? '#about' : '/#about';
 const blogHref = '/blog/';
 const topHref = isHome ? '#top' : '/';
-const featuredNav = PROJECTS.slice(0, 6);
+const systemsNav = PROJECTS.filter((p) => ['thunder', 'krnl', 'showcase', 'daily'].includes(p.slug));
+const webNav = PROJECTS.filter((p) => ['teamalazfrc', 'skallibrary', 'ridvanotel'].includes(p.slug));
 const latestProject = PROJECTS[0];
 ---
 <!doctype html>
@@ -105,14 +106,14 @@ const latestProject = PROJECTS[0];
         <div class="nav__menu">
           <div class="wrap grid">
             <div class="menu-col span-3">
-              <p class="t-label">Systems</p>
-              {featuredNav.slice(0, 3).map((p) => (
+              <p class="t-label">Systems and CLI</p>
+              {systemsNav.map((p) => (
                 <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} in {p.language}</span></a>
               ))}
             </div>
             <div class="menu-col span-3">
-              <p class="t-label">Tools and web</p>
-              {featuredNav.slice(3, 6).map((p) => (
+              <p class="t-label">Web platforms</p>
+              {webNav.map((p) => (
                 <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} in {p.language}</span></a>
               ))}
             </div>
@@ -173,21 +174,19 @@ const latestProject = PROJECTS[0];
           <p class="footer__lede">Systems, backends, and web software by {PROFILE.name}.</p>
         </div>
         <div class="span-2 footer__col">
-          <h3>Projects</h3>
+          <h3>Systems</h3>
           <ul>
-            <li><a href={PROJECTS[0].repoUrl} target="_blank" rel="noopener">thunder</a></li>
-            <li><a href={PROJECTS[1].repoUrl} target="_blank" rel="noopener">krnl</a></li>
-            <li><a href={PROJECTS[2].repoUrl} target="_blank" rel="noopener">showcase</a></li>
-            <li><a href={PROJECTS[3].repoUrl} target="_blank" rel="noopener">teamalazfrc</a></li>
+            {systemsNav.map((p) => (
+              <li><a href={p.repoUrl} target="_blank" rel="noopener">{p.name}</a></li>
+            ))}
           </ul>
         </div>
         <div class="span-2 footer__col">
-          <h3>Tools</h3>
+          <h3>Web</h3>
           <ul>
-            <li><a href={PROJECTS[4].repoUrl} target="_blank" rel="noopener">daily</a></li>
-            <li><a href={PROJECTS[6].repoUrl} target="_blank" rel="noopener">sp5der</a></li>
-            <li><a href={PROJECTS[7].repoUrl} target="_blank" rel="noopener">fizz</a></li>
-            <li><a href={PROJECTS[8].repoUrl} target="_blank" rel="noopener">cartflame</a></li>
+            {webNav.map((p) => (
+              <li><a href={p.repoUrl} target="_blank" rel="noopener">{p.name}</a></li>
+            ))}
           </ul>
         </div>
         <div class="span-2 footer__col">
