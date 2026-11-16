@@ -11,7 +11,7 @@ const bySlug = Object.fromEntries(PROJECTS.map((p) => [p.slug, p]));
 
 const stackDiagram = JSON.stringify({
   layout: 'hub',
-  alt: 'Deniz Dayan builds across Rust, Go, Kubernetes, Docker, Python, Next.js, Spring, and Astro.',
+  alt: 'Deniz Dayan builds across Rust, Go, Kubernetes, Docker, Python, Next.js, and Astro.',
   motion: { pulse: 'none' },
   center: { label: 'cotanjant', icon: 'ui:terminal' },
   spokes: [
@@ -21,7 +21,6 @@ const stackDiagram = JSON.stringify({
     { label: 'Docker', icon: 'docker' },
     { label: 'Python', icon: 'python' },
     { label: 'Next.js', icon: 'nextjs' },
-    { label: 'Spring', icon: 'spring' },
     { label: 'Astro', icon: 'astro' },
   ],
 });
@@ -569,7 +568,7 @@ function formatDate(date: Date): string {
           <p>Recent work spans an offline Rust DAW, an experimental Limine kernel, a Kubernetes and ArgoCD GitOps setup, and web platforms for Team ALAZ #12368, Çiğli SKAL, and Rıdvan Otel.</p>
           <ul class="about-facts">
             <li>GitHub: {PROFILE.handle} ({PROFILE.repoCount} public repositories)</li>
-            <li>Languages: Rust, Go, Python, TypeScript, Java</li>
+            <li>Languages: Rust, Go, Python, TypeScript</li>
             <li>Tools: Kubernetes, Docker, Linux, Next.js, Django, Astro</li>
           </ul>
           <div class="about-links">
