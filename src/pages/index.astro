@@ -3,25 +3,36 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PROJECTS, PROFILE } from '../data/projects';
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 2);
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const featuredPostIds = ['gitops-pipeline-for-go-service', 'rust-audio-thread-thunder'];
+const posts = [
+  ...featuredPostIds
+    .map((id) => allPosts.find((p) => p.id === id))
+    .filter((p): p is (typeof allPosts)[number] => Boolean(p)),
+  ...allPosts.filter((p) => !featuredPostIds.includes(p.id)),
+].slice(0, 2);
 
 const bySlug = Object.fromEntries(PROJECTS.map((p) => [p.slug, p]));
+const shippedCount = PROJECTS.filter((p) => p.status === 'Shipped').length;
+const showcaseCount = PROJECTS.filter((p) => p.status === 'Showcase').length;
+const hobbyCount = PROJECTS.filter((p) => p.status === 'Hobby').length;
 
 const stackDiagram = JSON.stringify({
   layout: 'hub',
-  alt: 'Deniz Dayan builds across Rust, Go, Kubernetes, Docker, Python, Next.js, and Astro.',
+  alt: 'Deniz Dayan builds with Spring Boot, TypeScript, Next.js, PostgreSQL, Redis, Docker, GitHub Actions, and Kubernetes.',
   motion: { pulse: 'none' },
   center: { label: 'cotanjant', icon: 'ui:terminal' },
   spokes: [
-    { label: 'Rust', icon: 'rust' },
-    { label: 'Go', icon: 'go' },
-    { label: 'Kubernetes', icon: 'kubernetes' },
-    { label: 'Docker', icon: 'docker' },
-    { label: 'Python', icon: 'python' },
+    { label: 'Spring Boot', icon: 'spring' },
+    { label: 'TypeScript', icon: 'typescript' },
     { label: 'Next.js', icon: 'nextjs' },
-    { label: 'Astro', icon: 'astro' },
+    { label: 'PostgreSQL', icon: 'postgres' },
+    { label: 'Redis', icon: 'redis' },
+    { label: 'Docker', icon: 'docker' },
+    { label: 'GitHub Actions', icon: 'github-actions' },
+    { label: 'Kubernetes', icon: 'kubernetes' },
   ],
 });
 
@@ -29,14 +40,6 @@ const postIconMap: Record<string, string> = {
   'rust-audio-thread-thunder': 'rust',
   'booting-krnl-with-limine': 'linux-tux',
   'gitops-pipeline-for-go-service': 'kubernetes',
-};
-
-const shortLang: Record<string, string> = {
-  Rust: 'Rust',
-  Go: 'Go',
-  TypeScript: 'TS',
-  Python: 'Py',
-  Java: 'Java',
 };
 
 function formatDate(date: Date): string {
@@ -49,7 +52,7 @@ function formatDate(date: Date): string {
 ---
 <BaseLayout
   title="cotanjant: Software by Deniz Dayan"
-  description="Personal website of Deniz Dayan (cotanjant): Rust systems tools, Go infrastructure, web projects, and technical writing."
+  description="Personal website of Deniz Dayan (cotanjant): Java and Spring Boot backends, TypeScript full-stack web apps, DevOps pipelines, and hobby projects."
   canonicalPath="/"
   activeNav="home"
   hasMoment={true}
@@ -112,6 +115,10 @@ function formatDate(date: Date): string {
         color: var(--accent);
         font: 500 13px/1.2 var(--font-mono);
       }
+      .pc-badge--hobby {
+        color: var(--muted);
+        border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+      }
       @media (max-width: 639px) {
         .ly-collage .ly-piece {
           padding: var(--s-4);
@@ -163,6 +170,15 @@ function formatDate(date: Date): string {
         height: 48px;
         background: linear-gradient(transparent, var(--u-bg));
         pointer-events: none;
+      }
+      .ui-win__st.is-shipped {
+        color: var(--u-accent-text);
+        background: var(--u-tint);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--u-accent) 24%, transparent);
+      }
+      .ui-win__st.is-shipped::before {
+        background: currentColor;
+        opacity: 1;
       }
       @media (min-width: 1024px) and (max-width: 1279px) {
         .app.ui { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
@@ -269,89 +285,92 @@ function formatDate(date: Date): string {
       <div class="hero-text grid hero__grid">
         <div class="span-3">
           <h1 id="hero-h">Software by Deniz Dayan</h1>
-          <p class="hero__lead">{PROFILE.repoCount} public GitHub repositories in Rust, Go, Python, and TypeScript.</p>
+          <p class="hero__lead">Backend, full-stack, and DevOps projects in Java, TypeScript, and Docker, plus Rust hobby builds.</p>
         </div>
 
-        <div class="ly-collage span-6 start-4" role="img" aria-label="Three rotating views of projects by Deniz Dayan: thunder DAW, krnl, daily, showcase, teamalazfrc, skallibrary, and ridvanotel.">
+        <div class="ly-collage span-6 start-4" role="img" aria-label="Three rotating views of projects by Deniz Dayan: cartflame, teamalazfrc, showcase, ridvanotel, skallibrary, thunder, daily, and krnl.">
           <div class="ly-collage__set is-on">
             <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
-              <div class="pc-head"><span>thunder</span><span class="pc-badge">Rust</span></div>
+              <div class="pc-head"><span>cartflame</span><span class="pc-badge">Showcase</span></div>
+              <p class="pc-title">Spring Boot API</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Data</span><em>Postgres</em></div>
+                <div class="pc-row"><span>Cache</span><em>Redis</em></div>
+                <div class="pc-row"><span>Queue</span><em>RabbitMQ</em></div>
+              </div>
+            </div>
+            <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
+              <div class="pc-head"><span>teamalazfrc</span><span class="pc-badge">Shipped</span></div>
+              <p class="pc-title">Team ALAZ #12368</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Stack</span><em>Next.js 15</em></div>
+                <div class="pc-row"><span>Admin</span><em>Git CMS</em></div>
+                <div class="pc-row"><span>Auth</span><em>HMAC</em></div>
+              </div>
+            </div>
+            <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
+              <div class="pc-head"><span>showcase</span><span class="pc-badge">DevOps</span></div>
+              <p class="pc-title">GitOps pipeline</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Sync</span><em>ArgoCD</em></div>
+                <div class="pc-row"><span>Infra</span><em>OpenTofu</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ly-collage__set" aria-hidden="true">
+            <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
+              <div class="pc-head"><span>ridvanotel</span><span class="pc-badge">Shipped</span></div>
+              <p class="pc-title">Ridvan Otel Cesme</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Locales</span><em>TR / EN</em></div>
+                <div class="pc-row"><span>Stack</span><em>React + Vite</em></div>
+                <div class="pc-row"><span>Motion</span><em>GSAP</em></div>
+              </div>
+            </div>
+            <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
+              <div class="pc-head"><span>skallibrary</span><span class="pc-badge">Shipped</span></div>
+              <p class="pc-title">SKAL catalog</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Stack</span><em>Django</em></div>
+                <div class="pc-row"><span>Loans</span><em>14-day</em></div>
+                <div class="pc-row"><span>Guard</span><em>PROTECT</em></div>
+              </div>
+            </div>
+            <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
+              <div class="pc-head"><span>cartflame</span><span class="pc-badge">Docker</span></div>
+              <p class="pc-title">Local stack</p>
+              <div class="pc-rows">
+                <div class="pc-row"><span>Compose</span><em>4 services</em></div>
+                <div class="pc-row"><span>Broker</span><em>RabbitMQ</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ly-collage__set" aria-hidden="true">
+            <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
+              <div class="pc-head"><span>thunder</span><span class="pc-badge pc-badge--hobby">Hobby</span></div>
               <p class="pc-title">Step-sequencer DAW</p>
               <div class="pc-rows">
                 <div class="pc-row"><span>Audio</span><em>cpal</em></div>
                 <div class="pc-row"><span>UI</span><em>egui_dock</em></div>
-                <div class="pc-row"><span>Plugins</span><em>clack-host</em></div>
+                <div class="pc-row"><span>Plugins</span><em>CLAP</em></div>
               </div>
             </div>
             <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
-              <div class="pc-head"><span>krnl</span><span class="pc-badge">x86_64</span></div>
-              <p class="pc-title">Limine Rust kernel</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Target</span><em>none</em></div>
-                <div class="pc-row"><span>Image</span><em>xorriso</em></div>
-                <div class="pc-row"><span>Boot</span><em>QEMU</em></div>
-              </div>
-            </div>
-            <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
-              <div class="pc-head"><span>daily</span><span class="pc-badge">CLI</span></div>
+              <div class="pc-head"><span>daily</span><span class="pc-badge pc-badge--hobby">Hobby</span></div>
               <p class="pc-title">Rust CLI tools</p>
               <div class="pc-rows">
                 <div class="pc-row"><span>download</span><em>progress</em></div>
                 <div class="pc-row"><span>remind</span><em>picker</em></div>
               </div>
             </div>
-          </div>
-
-          <div class="ly-collage__set" aria-hidden="true">
-            <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
-              <div class="pc-head"><span>showcase</span><span class="pc-badge">Go</span></div>
-              <p class="pc-title">GitOps deployment</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Backend</span><em>Go</em></div>
-                <div class="pc-row"><span>Sync</span><em>ArgoCD</em></div>
-                <div class="pc-row"><span>Infra</span><em>OpenTofu</em></div>
-              </div>
-            </div>
-            <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
-              <div class="pc-head"><span>ridvanotel</span><span class="pc-badge">React</span></div>
-              <p class="pc-title">Ridvan Otel Cesme</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Locales</span><em>TR / EN</em></div>
-                <div class="pc-row"><span>Stack</span><em>Vite + GSAP</em></div>
-              </div>
-            </div>
             <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
-              <div class="pc-head"><span>daily</span><span class="pc-badge">Astro</span></div>
-              <p class="pc-title">Release site</p>
+              <div class="pc-head"><span>krnl</span><span class="pc-badge pc-badge--hobby">Hobby</span></div>
+              <p class="pc-title">Limine kernel</p>
               <div class="pc-rows">
-                <div class="pc-row"><span>Targets</span><em>Win, Mac, Linux</em></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ly-collage__set" aria-hidden="true">
-            <div class="ly-piece" style="left: 4%; top: 6%; width: 47%">
-              <div class="pc-head"><span>teamalazfrc</span><span class="pc-badge">Next.js</span></div>
-              <p class="pc-title">Team ALAZ #12368</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Public</span><em>WebGL2</em></div>
-                <div class="pc-row"><span>Admin</span><em>Git CMS</em></div>
-                <div class="pc-row"><span>City</span><em>Izmir</em></div>
-              </div>
-            </div>
-            <div class="ly-piece pc-card-bottom" style="left: 49%; top: 46%; width: 47%; height: 50%">
-              <div class="pc-head"><span>skallibrary</span><span class="pc-badge">Django</span></div>
-              <p class="pc-title">SKAL catalog</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Loans</span><em>14-day</em></div>
-                <div class="pc-row"><span>Guard</span><em>PROTECT</em></div>
-              </div>
-            </div>
-            <div class="ly-piece" style="left: 53%; top: 10%; width: 43%">
-              <div class="pc-head"><span>thunder</span><span class="pc-badge">CLAP</span></div>
-              <p class="pc-title">Plugin host</p>
-              <div class="pc-rows">
-                <div class="pc-row"><span>Scanner</span><em>out-of-proc</em></div>
+                <div class="pc-row"><span>Target</span><em>x86_64</em></div>
+                <div class="pc-row"><span>Boot</span><em>QEMU</em></div>
               </div>
             </div>
           </div>
@@ -371,14 +390,14 @@ function formatDate(date: Date): string {
           <h2 id="projects-h">GitHub projects</h2>
         </div>
         <div class="span-6 start-7">
-          <p class="t-lead">Desktop audio tooling, an early x86_64 kernel, Go CLI and GitOps projects, and production web applications.</p>
+          <p class="t-lead">Spring Boot backend services, shipped TypeScript and Django web apps, Kubernetes GitOps pipelines, and Rust hobby projects.</p>
           <p><a class="link" href={PROFILE.github} target="_blank" rel="noopener">Browse all {PROFILE.repoCount} repositories</a></p>
         </div>
       </div>
 
-      <div class="ui app fill" role="img" aria-label="Repository list for cotanjant beside the Thunder Rust test runner" data-ui-pause-host>
+      <div class="ui app fill" role="img" aria-label="Repository list for cotanjant beside the cartflame Spring Boot backend test runner" data-ui-pause-host>
         <div class="app__pane app__pane--list">
-          <div class="ui ui-panel ui-win" data-ui="window" data-open="Active" data-work="Early" data-done="Shipped">
+          <div class="ui ui-panel ui-win" data-ui="window">
             <div class="ui-win__bar">
               <span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span>
               <span class="ui-win__crumb">cotanjant <i>/</i> <b>repositories</b></span>
@@ -387,13 +406,15 @@ function formatDate(date: Date): string {
             </div>
             <div class="ui-win__body">
               <nav class="ui-win__side" aria-hidden="true">
-                <span class="ui-win__nav is-on">Selected<em>7</em></span>
-                <span class="ui-win__nav">Rust<em>3</em></span>
-                <span class="ui-win__nav">TS<em>2</em></span>
-                <span class="ui-win__nav">Go<em>1</em></span>
+                <span class="ui-win__nav is-on">Selected<em>{PROJECTS.length}</em></span>
+                <span class="ui-win__nav">Shipped<em>{shippedCount}</em></span>
+                <span class="ui-win__nav">Showcase<em>{showcaseCount}</em></span>
+                <span class="ui-win__nav">Hobby<em>{hobbyCount}</em></span>
                 <span class="ui-win__label">Areas</span>
-                <span class="ui-win__nav"><span class="ui-win__hash">#</span>systems</span>
+                <span class="ui-win__nav"><span class="ui-win__hash">#</span>backend</span>
                 <span class="ui-win__nav"><span class="ui-win__hash">#</span>web</span>
+                <span class="ui-win__nav"><span class="ui-win__hash">#</span>devops</span>
+                <span class="ui-win__nav"><span class="ui-win__hash">#</span>hobby</span>
               </nav>
               <div class="ui-win__main">
                 <div class="ui-win__cols" aria-hidden="true"><span>Repo</span><span>Area</span><span>State</span><span>Lang</span></div>
@@ -403,8 +424,8 @@ function formatDate(date: Date): string {
                       <span class="ui-avatar" data-tone={String((idx % 5) + 1)}>{repo.name.slice(0, 2).toUpperCase()}</span>
                       <span class="ui-win__who">{repo.name}</span>
                       <span class="ui-win__sub">{repo.category}</span>
-                      <span class={`ui-win__st ${repo.status === 'Shipped' ? 'is-done' : repo.status === 'Early' ? 'is-you' : ''}`} data-st>{repo.status}</span>
-                      <span class="ui-win__age">{shortLang[repo.language] ?? repo.language}</span>
+                      <span class={`ui-win__st ${repo.status === 'Shipped' ? 'is-shipped' : repo.status === 'Showcase' ? 'is-you' : 'is-done'}`} data-st>{repo.status}</span>
+                      <span class="ui-win__age">{repo.shortLang}</span>
                     </li>
                   ))}
                 </ul>
@@ -417,24 +438,24 @@ function formatDate(date: Date): string {
           <div class="ui ui-panel ui-term" data-ui="terminal-run">
             <div class="ui-term__head">
               <span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <span class="ui-term__title">cotanjant/thunder</span>
-              <span class="ui-meta">rust</span>
+              <span class="ui-term__title">cartflame</span>
+              <span class="ui-meta">java / spring</span>
               <span class="ui-spacer"></span>
               <span class="ui-chip ui-chip--plain ui-term__branch"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="3.5" r="1.5"/><circle cx="5" cy="12.5" r="1.5"/><circle cx="11" cy="5.5" r="1.5"/><path d="M5 5v6M11 7c0 2.6-6 1.8-6 4"/></svg>main</span>
             </div>
             <div class="ui-term__screen" data-term-screen>
               <div class="ui-term__track" data-term-track>
-                <div class="ui-term__ln ui-term__cmd"><span class="ui-term__cwd">~/src/<span class="ui-term__up">cotanjant/</span>thunder</span><span class="ui-term__sig">$</span><span class="ui-term__typed" data-term-cmd>cargo test --offline</span></div>
+                <div class="ui-term__ln ui-term__cmd"><span class="ui-term__cwd">~/src/<span class="ui-term__up">cotanjant/</span>cartflame</span><span class="ui-term__sig">$</span><span class="ui-term__typed" data-term-cmd>docker compose up -d && ./mvnw test</span></div>
                 <div class="ui-term__ln ui-term__meter" data-term-out data-term-meter><span class="ui-term__bar" style="--p:1"><i></i></span><span class="ui-term__count" data-term-count>4 of 4 suites</span></div>
-                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">dsp::supersynth</span><span class="ui-term__n">unit</span><span class="ui-term__t">184ms</span></div>
-                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">mixer::pdc_sync</span><span class="ui-term__n">unit</span><span class="ui-term__t">240ms</span></div>
-                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">clap::scanner</span><span class="ui-term__n">ipc</span><span class="ui-term__t">510ms</span></div>
-                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">render::offline</span><span class="ui-term__n">ok</span><span class="ui-term__t">690ms</span></div>
+                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">postgres::schema</span><span class="ui-term__n">db</span><span class="ui-term__t">210ms</span></div>
+                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">redis::rate_limit</span><span class="ui-term__n">cache</span><span class="ui-term__t">145ms</span></div>
+                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">rabbitmq::events</span><span class="ui-term__n">mq</span><span class="ui-term__t">320ms</span></div>
+                <div class="ui-term__ln ui-term__log" data-term-out data-term-step><svg class="ui-term__tick" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg><span class="ui-term__path">api::checkout</span><span class="ui-term__n">http</span><span class="ui-term__t">480ms</span></div>
                 <div class="ui-term__ln ui-term__gap" data-term-out aria-hidden="true"></div>
-                <div class="ui-term__ln ui-term__sum" data-term-out><span class="ui-term__key">Targets</span><span class="ui-term__val">Win, macOS, Linux</span></div>
-                <div class="ui-term__ln ui-term__sum" data-term-out><span class="ui-term__key">Offline</span><span class="ui-term__val">signal ok</span><span class="ui-term__dim">(0 NaN)</span></div>
-                <div class="ui-term__ln ui-term__done" data-term-out data-term-done><span class="ui-term__ok"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.3 2.4 2.4 4.6-5"/></svg></span><b>Done</b><span class="ui-term__dim">in 1.62s</span></div>
-                <div class="ui-term__ln ui-term__cmd" data-term-next><span class="ui-term__cwd">~/src/<span class="ui-term__up">cotanjant/</span>thunder</span><span class="ui-term__sig">$</span><span class="ui-term__typed"></span><i class="ui-term__caret" aria-hidden="true"></i></div>
+                <div class="ui-term__ln ui-term__sum" data-term-out><span class="ui-term__key">Stack</span><span class="ui-term__val">Spring Boot + Docker</span></div>
+                <div class="ui-term__ln ui-term__sum" data-term-out><span class="ui-term__key">Mode</span><span class="ui-term__val">working showcase</span><span class="ui-term__dim">(local compose)</span></div>
+                <div class="ui-term__ln ui-term__done" data-term-out data-term-done><span class="ui-term__ok"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.3 2.4 2.4 4.6-5"/></svg></span><b>Done</b><span class="ui-term__dim">in 1.16s</span></div>
+                <div class="ui-term__ln ui-term__cmd" data-term-next><span class="ui-term__cwd">~/src/<span class="ui-term__up">cotanjant/</span>cartflame</span><span class="ui-term__sig">$</span><span class="ui-term__typed"></span><i class="ui-term__caret" aria-hidden="true"></i></div>
               </div>
             </div>
           </div>
@@ -448,34 +469,21 @@ function formatDate(date: Date): string {
       <div class="grid">
         <div class="span-5">
           <div class="section-head">
-            <h2 id="builds-h">Builds: audio, kernel, GitOps, web. <span class="muted">Select a project to inspect its setup.</span></h2>
+            <h2 id="builds-h">Builds: backend, full-stack, DevOps, hobby. <span class="muted">Select a project to inspect its setup.</span></h2>
           </div>
 
           <div class="tabs" role="tablist" aria-label="Featured builds">
-            <button class="tab" type="button" role="tab" id="t-thunder" aria-selected="true" aria-controls="panel-thunder screen-thunder">Run thunder</button>
-            <button class="tab" type="button" role="tab" id="t-krnl" aria-selected="false" aria-controls="panel-krnl screen-krnl">Boot krnl</button>
-            <button class="tab" type="button" role="tab" id="t-showcase" aria-selected="false" aria-controls="panel-showcase screen-showcase">Deploy showcase</button>
+            <button class="tab" type="button" role="tab" id="t-cartflame" aria-selected="true" aria-controls="panel-cartflame screen-cartflame">Run cartflame</button>
             <button class="tab" type="button" role="tab" id="t-alaz" aria-selected="false" aria-controls="panel-alaz screen-alaz">Edit teamalazfrc</button>
+            <button class="tab" type="button" role="tab" id="t-showcase" aria-selected="false" aria-controls="panel-showcase screen-showcase">Deploy showcase</button>
+            <button class="tab" type="button" role="tab" id="t-thunder" aria-selected="false" aria-controls="panel-thunder screen-thunder">Thunder (Hobby)</button>
           </div>
 
           <div class="tabs-panels">
-            <div role="tabpanel" id="panel-thunder" aria-labelledby="t-thunder">
-              <p>{bySlug.thunder.summary}</p>
+            <div role="tabpanel" id="panel-cartflame" aria-labelledby="t-cartflame">
+              <p>{bySlug.cartflame.summary}</p>
               <div class="tabs-links">
-                <a class="link" href={bySlug.thunder.repoUrl} target="_blank" rel="noopener">Open thunder repo</a>
-                <a class="link" href={bySlug.thunder.liveUrl} target="_blank" rel="noopener">Visit download page</a>
-              </div>
-            </div>
-            <div role="tabpanel" id="panel-krnl" aria-labelledby="t-krnl" hidden>
-              <p>{bySlug.krnl.summary}</p>
-              <div class="tabs-links">
-                <a class="link" href={bySlug.krnl.repoUrl} target="_blank" rel="noopener">Open krnl repo</a>
-              </div>
-            </div>
-            <div role="tabpanel" id="panel-showcase" aria-labelledby="t-showcase" hidden>
-              <p>{bySlug.showcase.summary}</p>
-              <div class="tabs-links">
-                <a class="link" href={bySlug.showcase.repoUrl} target="_blank" rel="noopener">Open showcase repo</a>
+                <a class="link" href={bySlug.cartflame.repoUrl} target="_blank" rel="noopener">Open cartflame repo</a>
               </div>
             </div>
             <div role="tabpanel" id="panel-alaz" aria-labelledby="t-alaz" hidden>
@@ -485,53 +493,34 @@ function formatDate(date: Date): string {
                 <a class="link" href={bySlug.teamalazfrc.liveUrl} target="_blank" rel="noopener">Visit live site</a>
               </div>
             </div>
+            <div role="tabpanel" id="panel-showcase" aria-labelledby="t-showcase" hidden>
+              <p>{bySlug.showcase.summary}</p>
+              <div class="tabs-links">
+                <a class="link" href={bySlug.showcase.repoUrl} target="_blank" rel="noopener">Open showcase repo</a>
+              </div>
+            </div>
+            <div role="tabpanel" id="panel-thunder" aria-labelledby="t-thunder" hidden>
+              <p>{bySlug.thunder.summary}</p>
+              <div class="tabs-links">
+                <a class="link" href={bySlug.thunder.repoUrl} target="_blank" rel="noopener">Open thunder repo</a>
+                <a class="link" href={bySlug.thunder.liveUrl} target="_blank" rel="noopener">Visit download page</a>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="frame frame--split span-6 start-7">
-          <div class="stage stage--fade-br" id="screen-thunder">
+          <div class="stage stage--fade-br" id="screen-cartflame">
             <div class="at-corner to-edge" style="--ax:36px;--ay:40px;--w:460px">
               <div class="ui ui-panel ui-term" data-ui="terminal-run">
-                <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">thunder</span><span class="ui-meta">rust 1.88+</span><span class="ui-spacer"></span></div>
+                <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">cartflame</span><span class="ui-meta">spring boot</span><span class="ui-spacer"></span></div>
                 <div class="ui-term__screen">
-                  <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span>cargo run --release</span></div>
-                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">cpal worker</span><span class="ui-term__t">active</span></div>
-                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">16-pad drum + fm</span><span class="ui-term__t">loaded</span></div>
-                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">wav/flac/ogg/mp3</span><span class="ui-term__t">ready</span></div>
+                  <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span>docker compose up -d</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">postgres 16</span><span class="ui-term__t">healthy</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">redis rate limit</span><span class="ui-term__t">active</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">rabbitmq broker</span><span class="ui-term__t">connected</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">spring api :8080</span><span class="ui-term__t">ready</span></div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stage stage--fade-br" id="screen-krnl" hidden>
-            <div class="at-corner to-edge" style="--ax:36px;--ay:40px;--w:460px">
-              <div class="ui ui-panel ui-code" data-ui="code">
-                <div class="ui-code__tabs">
-                  <span class="ui-code__tab is-on"><i class="ui-code__lang">SH</i>build.sh</span>
-                  <span class="ui-spacer"></span>
-                  <span class="ui-chip ui-chip--plain ui-code__chip">Limine</span>
-                </div>
-                <pre class="ui-code__pre"><code><span class="ui-code__ln" data-n="1"><span class="k">cargo</span> build -p kernel</span>
-<span class="ui-code__ln" data-n="2"><span class="k">cp</span> target/debug/kernel iso/</span>
-<span class="ui-code__ln is-mark" data-n="3"><span class="f">xorriso</span> -o krnl.iso iso</span>
-<span class="ui-code__ln" data-n="4"><span class="f">qemu</span> -cdrom krnl.iso</span></code></pre>
-              </div>
-            </div>
-          </div>
-
-          <div class="stage stage--fade-br" id="screen-showcase" hidden>
-            <div class="at-corner to-edge" style="--ax:36px;--ay:40px;--w:460px">
-              <div class="ui ui-panel ui-pipe" data-ui="pipeline-board">
-                <div class="ui-pipe__head">
-                  <span class="ui-pipe__repo">cotanjant/showcase</span><i class="ui-pipe__slash">/</i><code class="ui-pipe__ref">main</code>
-                  <span class="ui-spacer"></span>
-                  <span class="ui-chip ui-chip--ink ui-pipe__chip">Synced</span>
-                </div>
-                <ol class="ui-pipe__steps">
-                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/go.svg" alt=""></span><span class="ui-pipe__nm">Build Go</span></span><code class="ui-pipe__cmd">go build</code><span class="ui-pipe__time">ok</span></li>
-                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/docker.svg" alt=""></span><span class="ui-pipe__nm">Image</span></span><code class="ui-pipe__cmd">docker build</code><span class="ui-pipe__time">ok</span></li>
-                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/kubernetes.svg" alt=""></span><span class="ui-pipe__nm">ArgoCD</span></span><code class="ui-pipe__cmd">gitops</code><span class="ui-pipe__time">live</span></li>
-                </ol>
               </div>
             </div>
           </div>
@@ -554,6 +543,37 @@ function formatDate(date: Date): string {
               </div>
             </div>
           </div>
+
+          <div class="stage stage--fade-br" id="screen-showcase" hidden>
+            <div class="at-corner to-edge" style="--ax:36px;--ay:40px;--w:460px">
+              <div class="ui ui-panel ui-pipe" data-ui="pipeline-board">
+                <div class="ui-pipe__head">
+                  <span class="ui-pipe__repo">cotanjant/showcase</span><i class="ui-pipe__slash">/</i><code class="ui-pipe__ref">main</code>
+                  <span class="ui-spacer"></span>
+                  <span class="ui-chip ui-chip--ink ui-pipe__chip">Synced</span>
+                </div>
+                <ol class="ui-pipe__steps">
+                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/github-actions.svg" alt=""></span><span class="ui-pipe__nm">CI Build</span></span><code class="ui-pipe__cmd">ci workflow</code><span class="ui-pipe__time">ok</span></li>
+                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/docker.svg" alt=""></span><span class="ui-pipe__nm">Image</span></span><code class="ui-pipe__cmd">docker build</code><span class="ui-pipe__time">ok</span></li>
+                  <li class="ui-pipe__step is-done"><span class="ui-pipe__ico"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-pipe__name"><span class="ui-pipe__tool" aria-hidden="true"><img src="/assets/icons/kubernetes.svg" alt=""></span><span class="ui-pipe__nm">ArgoCD</span></span><code class="ui-pipe__cmd">gitops</code><span class="ui-pipe__time">live</span></li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage stage--fade-br" id="screen-thunder" hidden>
+            <div class="at-corner to-edge" style="--ax:36px;--ay:40px;--w:460px">
+              <div class="ui ui-panel ui-term" data-ui="terminal-run">
+                <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">thunder</span><span class="ui-meta">rust · hobby</span><span class="ui-spacer"></span></div>
+                <div class="ui-term__screen">
+                  <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span>cargo run --release</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">cpal worker</span><span class="ui-term__t">active</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">16-pad drum + fm</span><span class="ui-term__t">loaded</span></div>
+                  <div class="ui-term__ln ui-term__log"><span class="ui-term__path">wav/flac/ogg/mp3</span><span class="ui-term__t">ready</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -564,12 +584,14 @@ function formatDate(date: Date): string {
       <div class="grid">
         <div class="span-5">
           <h2 id="about-h">About</h2>
-          <p class="t-lead">I build systems tools in Rust and Go alongside web applications in TypeScript and Python.</p>
-          <p>Recent work spans an offline Rust DAW, an experimental Limine kernel, a Kubernetes and ArgoCD GitOps setup, and web platforms for Team ALAZ #12368, Çiğli SKAL, and Rıdvan Otel.</p>
+          <p class="t-lead">I build backend APIs in Java and Spring Boot, full-stack web apps in TypeScript, and containerized deployment pipelines.</p>
+          <p>Work spans a Spring Boot e-commerce backend showcase with PostgreSQL, Redis, and RabbitMQ, a Kubernetes and ArgoCD GitOps setup, and shipped web platforms for Team ALAZ #12368, Rıdvan Otel, and Çiğli SKAL. On the side, I build hobby audio and systems projects in Rust.</p>
           <ul class="about-facts">
             <li>GitHub: {PROFILE.handle} ({PROFILE.repoCount} public repositories)</li>
-            <li>Languages: Rust, Go, Python, TypeScript</li>
-            <li>Tools: Kubernetes, Docker, Linux, Next.js, Django, Astro</li>
+            <li>Core languages: Java, TypeScript</li>
+            <li>Backend &amp; Web: Spring Boot, Next.js, React, PostgreSQL, Redis, RabbitMQ</li>
+            <li>DevOps &amp; Infra: Docker, Kubernetes, GitHub Actions (CI/CD), Linux, ArgoCD, OpenTofu</li>
+            <li>Other &amp; Hobby: Python / Django (shipped), Rust (hobby)</li>
           </ul>
           <div class="about-links">
             <a class="link" href={PROFILE.github} target="_blank" rel="noopener">GitHub</a>
@@ -589,7 +611,7 @@ function formatDate(date: Date): string {
   <section class="section statement" id="statement" data-moment="word-highlight" aria-label="Engineering approach">
     <div class="wrap">
       <p class="t-label">Approach</p>
-      <p class="mo-wh__text">I prefer tools that run locally, compile to one binary, and stay <strong>readable</strong> when you return to the source six months later.</p>
+      <p class="mo-wh__text">I prefer backends with clear boundaries, reproducible Docker setups, and code that stays <strong>readable</strong> when you return to the source six months later.</p>
     </div>
   </section>
 

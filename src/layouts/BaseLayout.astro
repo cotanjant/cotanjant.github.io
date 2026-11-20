@@ -24,9 +24,9 @@ const buildsHref = isHome ? '#builds' : '/#builds';
 const aboutHref = isHome ? '#about' : '/#about';
 const blogHref = '/blog/';
 const topHref = isHome ? '#top' : '/';
-const systemsNav = PROJECTS.filter((p) => ['thunder', 'krnl', 'showcase', 'daily'].includes(p.slug));
-const webNav = PROJECTS.filter((p) => ['teamalazfrc', 'skallibrary', 'ridvanotel'].includes(p.slug));
-const latestProject = PROJECTS[0];
+const coreNav = PROJECTS.filter((p) => p.tier === 'core');
+const hobbyNav = PROJECTS.filter((p) => p.tier === 'hobby');
+const featuredProject = PROJECTS[0];
 ---
 <!doctype html>
 <html lang="en" data-type="software" data-radius="sharp" data-ground="sage" data-buttons="arrow" data-motion>
@@ -106,34 +106,34 @@ const latestProject = PROJECTS[0];
         <div class="nav__menu">
           <div class="wrap grid">
             <div class="menu-col span-3">
-              <p class="t-label">Systems and CLI</p>
-              {systemsNav.map((p) => (
-                <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} in {p.language}</span></a>
+              <p class="t-label">Backend, Web & DevOps</p>
+              {coreNav.map((p) => (
+                <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} · {p.stack}</span></a>
               ))}
             </div>
             <div class="menu-col span-3">
-              <p class="t-label">Web platforms</p>
-              {webNav.map((p) => (
-                <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} in {p.language}</span></a>
+              <p class="t-label">Hobby projects</p>
+              {hobbyNav.map((p) => (
+                <a href={p.repoUrl} target="_blank" rel="noopener">{p.name}<span>{p.category} · {p.stack}</span></a>
               ))}
             </div>
-            <a class="menu-card span-3 start-10" href={latestProject.repoUrl} target="_blank" rel="noopener">
+            <a class="menu-card span-3 start-10" href={featuredProject.repoUrl} target="_blank" rel="noopener">
               <div class="panel">
                 <div class="stage stage--fade-br">
                   <div class="at-corner" style="--ax:24px;--ay:20px;--w:320px">
                     <div class="ui ui-panel ui-term" data-ui="terminal-run">
-                      <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">thunder</span><span class="ui-meta">rust</span><span class="ui-spacer"></span></div>
+                      <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">cartflame</span><span class="ui-meta">spring boot</span><span class="ui-spacer"></span></div>
                       <div class="ui-term__screen">
-                        <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span>cargo run --release</span></div>
-                        <div class="ui-term__ln ui-term__log"><span class="ui-term__path">cpal worker: 48 kHz</span><span class="ui-term__t">ready</span></div>
-                        <div class="ui-term__ln ui-term__log"><span class="ui-term__path">clap scanner: isolated</span><span class="ui-term__t">ok</span></div>
+                        <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span>docker compose up -d</span></div>
+                        <div class="ui-term__ln ui-term__log"><span class="ui-term__path">postgres + redis: healthy</span><span class="ui-term__t">ok</span></div>
+                        <div class="ui-term__ln ui-term__log"><span class="ui-term__path">spring api :8080</span><span class="ui-term__t">ready</span></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <span class="t-card">{latestProject.name}</span>
-              <span class="t-small muted">Step-sequencer DAW in Rust</span>
+              <span class="t-card">{featuredProject.name}</span>
+              <span class="t-small muted">Spring Boot e-commerce API (Showcase)</span>
             </a>
           </div>
         </div>
@@ -171,20 +171,20 @@ const latestProject = PROJECTS[0];
       <div class="grid">
         <div class="span-4 stack-4">
           <a class="nav__logo" href={topHref}><span class="mark" data-mark="stack" aria-hidden="true"></span>{PROFILE.handle}</a>
-          <p class="footer__lede">Systems, backends, and web software by {PROFILE.name}.</p>
+          <p class="footer__lede">Backend, full-stack, and DevOps software by {PROFILE.name}.</p>
         </div>
         <div class="span-2 footer__col">
-          <h3>Systems</h3>
+          <h3>Core</h3>
           <ul>
-            {systemsNav.map((p) => (
+            {coreNav.map((p) => (
               <li><a href={p.repoUrl} target="_blank" rel="noopener">{p.name}</a></li>
             ))}
           </ul>
         </div>
         <div class="span-2 footer__col">
-          <h3>Web</h3>
+          <h3>Hobby</h3>
           <ul>
-            {webNav.map((p) => (
+            {hobbyNav.map((p) => (
               <li><a href={p.repoUrl} target="_blank" rel="noopener">{p.name}</a></li>
             ))}
           </ul>
